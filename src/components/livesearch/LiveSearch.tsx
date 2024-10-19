@@ -57,6 +57,7 @@ function LiveSearch<T>({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -132,6 +133,17 @@ function LiveSearch<T>({
     searchTerm,
     favorites,
   ]);
+
+  useEffect(() => {
+    if (
+      positionArrowNavigation >= 0 &&
+      itemRefs.current[positionArrowNavigation]
+    ) {
+      itemRefs.current[positionArrowNavigation]?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [positionArrowNavigation]);
 
   const measureTextWidth = (text: string) => {
     if (inputRef.current) {
@@ -244,7 +256,11 @@ function LiveSearch<T>({
     }
   }, [currentPage]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleClickInput() {
+    setPositionArrowNavigation(-1);
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (dropdownRef.current) {
       dropdownRef.current.scrollTop = 0;
     }
@@ -349,6 +365,7 @@ function LiveSearch<T>({
         <StyledLiveSearch.ListItem
           key={index}
           matchAll={matchAll}
+          ref={(el) => (itemRefs.current[index] = el)}
           navigationIsHere={positionArrowNavigation === index}
         >
           {matchAll
@@ -405,6 +422,7 @@ function LiveSearch<T>({
           value={searchTerm}
           onChange={handleInputChange}
           placeholder={placeholder}
+          onClick={handleClickInput}
         />
         {renderArrow()}
         {renderSuggestion()}
