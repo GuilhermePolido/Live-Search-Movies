@@ -82,7 +82,8 @@ const ListItem = styled.li<{ matchAll: boolean; navigationIsHere: boolean }>`
     if (props.matchAll) {
       return `
           background-color: #e1f2ff;
-          height: 100px
+          height: 100px;
+          border: 1px solid ${props.navigationIsHere ? '#abd0ed' : '#e1f2ff'}
         `;
     }
 
@@ -92,6 +93,10 @@ const ListItem = styled.li<{ matchAll: boolean; navigationIsHere: boolean }>`
         `;
     }
   }}
+`;
+
+const ListItemFavorite = styled.div`
+  margin-right: 10px;
 `;
 
 const ListItemTitle = styled.span`
@@ -135,4 +140,5 @@ export const StyledLiveSearch = {
   ListItemTitle,
   Highlight,
   ListItemEmpty,
+  ListItemFavorite,
 };

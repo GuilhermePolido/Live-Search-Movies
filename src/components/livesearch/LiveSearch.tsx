@@ -6,6 +6,7 @@ import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
+import { IoStar } from "react-icons/io5";
 
 type LiveSearchProps<T> = {
   label: string;
@@ -26,6 +27,8 @@ type LiveSearchProps<T> = {
     };
   }>;
   searchSuggestionWhenEmpty?: boolean;
+  onChangeFavorites: (favorites: T[]) => void;
+  favorites: T[];
 };
 
 function LiveSearch<T>({
@@ -37,6 +40,8 @@ function LiveSearch<T>({
   titleField,
   identifierField,
   searchSuggestionWhenEmpty = true,
+  onChangeFavorites,
+  favorites,
 }: LiveSearchProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [prevSearchTerm, setPrevSearchTerm] = useState("");
@@ -56,6 +61,10 @@ function LiveSearch<T>({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isDropdownVisible) {
+        if (e.key === " " && results[positionArrowNavigation]) {
+          handleToggleFavorite(results[positionArrowNavigation]);
+          e.preventDefault();
+        }
         if (e.key === "ArrowLeft") {
           if (prevSearchTerm != null && prevSearchTerm.length > 0) {
             setTextWidth(measureTextWidth(String(prevSearchTerm)));
@@ -63,6 +72,7 @@ function LiveSearch<T>({
             setPositionArrowNavigation(-1);
             setResults([]);
             setPrevSearchTerm("");
+            e.preventDefault();
           }
         } else if (e.key === "ArrowRight") {
           if (
@@ -77,13 +87,16 @@ function LiveSearch<T>({
             setSearchTerm(suggestion);
             setPositionArrowNavigation(-1);
             setResults([]);
+            e.preventDefault();
           }
         } else if (e.key === "ArrowDown") {
           setPositionArrowNavigation((prev) =>
             Math.min(prev + 1, results.length - 1)
           );
+          e.preventDefault();
         } else if (e.key === "ArrowUp") {
           setPositionArrowNavigation((prev) => Math.max(prev - 1, -1));
+          e.preventDefault();
         } else if (e.key === "Enter" && results[positionArrowNavigation]) {
           const selectedItem = results[positionArrowNavigation];
 
@@ -95,6 +108,7 @@ function LiveSearch<T>({
             setSearchTerm(String(selectedItem[titleField]));
             setPositionArrowNavigation(-1);
             setResults([]);
+            e.preventDefault();
           }
         }
       }
@@ -116,6 +130,7 @@ function LiveSearch<T>({
     prevSearchTerm,
     suggestion,
     searchTerm,
+    favorites,
   ]);
 
   const measureTextWidth = (text: string) => {
@@ -135,6 +150,20 @@ function LiveSearch<T>({
 
     return 0;
   };
+
+  function handleToggleFavorite(item: T) {
+    const index = favorites.findIndex(
+      (fav) => fav[identifierField] === item[identifierField]
+    );
+
+    if (index != -1) {
+      const newFavorites = [...favorites];
+      newFavorites.splice(index, 1);
+      onChangeFavorites?.(newFavorites);
+    } else {
+      onChangeFavorites?.([...favorites, item]);
+    }
+  }
 
   function handleScroll() {
     if (dropdownRef.current && !isFetching) {
@@ -311,6 +340,11 @@ function LiveSearch<T>({
       const matchAll =
         registerMatch != null &&
         registerMatch === Number(item[identifierField]);
+      const isFavorite =
+        favorites.find(
+          (fav) => fav[identifierField] === item[identifierField]
+        ) != null;
+
       return (
         <StyledLiveSearch.ListItem
           key={index}
@@ -326,6 +360,11 @@ function LiveSearch<T>({
                 item,
                 highlightMatch(String(item[titleField]), searchTerm)
               )}
+          <StyledLiveSearch.ListItemFavorite
+            onClick={() => handleToggleFavorite(item)}
+          >
+            <IoStar size="20px" color={isFavorite ? "#fdb022" : "#fff"} />
+          </StyledLiveSearch.ListItemFavorite>
         </StyledLiveSearch.ListItem>
       );
     });
@@ -371,7 +410,8 @@ function LiveSearch<T>({
         {renderSuggestion()}
       </StyledLiveSearch.InputContent>
       <InputHelper>
-        Utilize as teclas ↓ ↑ para navegar entre as opções
+        Utilize as teclas ↓ ↑ para navegar entre as opções, Enter para
+        selecionar
       </InputHelper>
       {isDropdownVisible ? renderDropdown() : null}
     </StyledLiveSearch.Content>

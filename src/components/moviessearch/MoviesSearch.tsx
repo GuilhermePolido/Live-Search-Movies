@@ -5,16 +5,36 @@ import Tag from "../tag/Tag";
 import LiveSearch from "../livesearch/LiveSearch";
 import { StyledLiveSearch } from "../livesearch/LiveSearch.Styled";
 import MovieResource from "../../resources/MovieResource";
+import { LocalStorageKeys } from "../../utils/LocalStorageKeys";
 
 const baseUrlImage = import.meta.env.VITE_BASE_URL_IMG;
 const baseUrlMovie = import.meta.env.VITE_BASE_URL_MOVIE;
 
 export default function MoviesSearch() {
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [favorites, setFavorites] = useState<Movie[]>([]);
 
   useEffect(() => {
     getGenres();
+    getFavorites();
   }, []);
+
+  function getFavorites() {
+    const savedFavorites = localStorage.getItem(
+      LocalStorageKeys.movieFavorites
+    );
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
+  }
+
+  function handleChangeFavorites(newFavorites: Movie[]) {
+    setFavorites(newFavorites);
+    localStorage.setItem(
+      LocalStorageKeys.movieFavorites,
+      JSON.stringify(newFavorites)
+    );
+  }
 
   function getGenres() {
     MovieResource.listGenres().then((response) => {
@@ -41,7 +61,10 @@ export default function MoviesSearch() {
     }
 
     return (
-      <StyledMoviesSearch.MatchAll.Content href={`${baseUrlMovie}/${item.id}`} target="_blank">
+      <StyledMoviesSearch.MatchAll.Content
+        href={`${baseUrlMovie}/${item.id}`}
+        target="_blank"
+      >
         <StyledMoviesSearch.MatchAll.Image
           src={`${baseUrlImage}/${item.poster_path}`}
           alt={item.title}
@@ -67,7 +90,10 @@ export default function MoviesSearch() {
 
   function renderItem(item: Movie, renderedTitle: ReactNode) {
     return (
-      <StyledMoviesSearch.MatchAll.Content href={`${baseUrlMovie}/${item.id}`} target="_blank">
+      <StyledMoviesSearch.MatchAll.Content
+        href={`${baseUrlMovie}/${item.id}`}
+        target="_blank"
+      >
         {renderedTitle}
       </StyledMoviesSearch.MatchAll.Content>
     );
@@ -82,6 +108,8 @@ export default function MoviesSearch() {
       renderMatchAll={renderMatchAll}
       renderItem={renderItem}
       onSearch={fetchData}
+      onChangeFavorites={handleChangeFavorites}
+      favorites={favorites}
     />
   );
 }
