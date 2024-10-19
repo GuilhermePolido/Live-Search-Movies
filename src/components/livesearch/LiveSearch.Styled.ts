@@ -59,7 +59,7 @@ const Dropdown = styled.ul`
   box-shadow: 0px 12px 16px -4px #10182814;
 `;
 
-const ListItem = styled.li<{ matchAll: boolean }>`
+const ListItem = styled.li<{ matchAll: boolean; navigationIsHere: boolean }>`
   display: flex;
   align-items: center;
   height: 40px;
@@ -83,6 +83,12 @@ const ListItem = styled.li<{ matchAll: boolean }>`
       return `
           background-color: #e1f2ff;
           height: 100px
+        `;
+    }
+
+    if (props.navigationIsHere) {
+      return `
+          background-color: #d2d2d2;
         `;
     }
   }}

@@ -81,7 +81,7 @@ export default function MoviesSearch() {
       identifierField="id"
       renderMatchAll={renderMatchAll}
       renderItem={renderItem}
-      handleSearch={fetchData}
+      onSearch={fetchData}
     />
   );
 }

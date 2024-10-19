@@ -14,7 +14,17 @@ type LiveSearchProps<T> = {
   identifierField: keyof T;
   renderMatchAll: (item: T, renderedTitle: ReactNode) => ReactNode;
   renderItem: (item: T, renderedTitle: ReactNode) => ReactNode;
-  handleSearch: (query: string, page: number) => Promise<any>;
+  onSearch: (
+    query: string,
+    page: number
+  ) => Promise<{
+    data: {
+      page: number;
+      results: T[];
+      total_pages: number;
+      total_results: number;
+    };
+  }>;
   searchSuggestionWhenEmpty?: boolean;
 };
 
@@ -23,12 +33,13 @@ function LiveSearch<T>({
   placeholder,
   renderMatchAll,
   renderItem,
-  handleSearch,
+  onSearch,
   titleField,
   identifierField,
   searchSuggestionWhenEmpty = true,
 }: LiveSearchProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [prevSearchTerm, setPrevSearchTerm] = useState("");
   const [results, setResults] = useState<T[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -37,9 +48,75 @@ function LiveSearch<T>({
   const [textWidth, setTextWidth] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const [registerMatch, setRegisterMatch] = useState<number | null>(null);
+  const [positionArrowNavigation, setPositionArrowNavigation] = useState(-1);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isDropdownVisible) {
+        if (e.key === "ArrowLeft") {
+          if (prevSearchTerm != null && prevSearchTerm.length > 0) {
+            setTextWidth(measureTextWidth(String(prevSearchTerm)));
+            setSearchTerm(prevSearchTerm);
+            setPositionArrowNavigation(-1);
+            setResults([]);
+            setPrevSearchTerm("");
+          }
+        } else if (e.key === "ArrowRight") {
+          if (
+            suggestion != null &&
+            searchTerm != null &&
+            suggestion.length > 0 &&
+            searchTerm.length > 0 &&
+            suggestion.toLowerCase() !== searchTerm.toLowerCase()
+          ) {
+            setPrevSearchTerm(searchTerm);
+            setTextWidth(measureTextWidth(String(suggestion)));
+            setSearchTerm(suggestion);
+            setPositionArrowNavigation(-1);
+            setResults([]);
+          }
+        } else if (e.key === "ArrowDown") {
+          setPositionArrowNavigation((prev) =>
+            Math.min(prev + 1, results.length - 1)
+          );
+        } else if (e.key === "ArrowUp") {
+          setPositionArrowNavigation((prev) => Math.max(prev - 1, -1));
+        } else if (e.key === "Enter" && results[positionArrowNavigation]) {
+          const selectedItem = results[positionArrowNavigation];
+
+          if (
+            String(selectedItem[titleField]).toLowerCase() !==
+            searchTerm.toLowerCase()
+          ) {
+            setTextWidth(measureTextWidth(String(selectedItem[titleField])));
+            setSearchTerm(String(selectedItem[titleField]));
+            setPositionArrowNavigation(-1);
+            setResults([]);
+          }
+        }
+      }
+    };
+
+    if (isDropdownVisible) {
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    isDropdownVisible,
+    results,
+    positionArrowNavigation,
+    prevSearchTerm,
+    suggestion,
+    searchTerm,
+  ]);
 
   const measureTextWidth = (text: string) => {
     if (inputRef.current) {
@@ -76,7 +153,7 @@ function LiveSearch<T>({
 
   function getData() {
     setIsFetching(true);
-    handleSearch?.(searchTerm, currentPage).then((response) => {
+    onSearch?.(searchTerm, currentPage).then((response) => {
       const { data } = response;
       const newResults = [...results, ...data.results];
 
@@ -89,7 +166,7 @@ function LiveSearch<T>({
         setRegisterMatch(null);
       } else {
         const matchedItem = newResults[indexMatch];
-        setRegisterMatch(matchedItem.id);
+        setRegisterMatch(Number(matchedItem[identifierField]));
 
         if (indexMatch > 0) {
           newResults.splice(indexMatch, 1);
@@ -103,7 +180,7 @@ function LiveSearch<T>({
       setIsFetching(false);
 
       if (newResults.length > 0) {
-        setSuggestion(newResults[0][titleField]);
+        setSuggestion(String(newResults[0][titleField]));
       } else {
         setSuggestion("");
       }
@@ -111,6 +188,7 @@ function LiveSearch<T>({
   }
 
   useEffect(() => {
+    setPositionArrowNavigation(-1);
     if (searchTerm != null && searchTerm.length > 0) {
       setIsFetching(true);
       const delayDebounceFn = setTimeout(() => {
@@ -141,6 +219,8 @@ function LiveSearch<T>({
     if (dropdownRef.current) {
       dropdownRef.current.scrollTop = 0;
     }
+
+    setPrevSearchTerm("");
 
     setCurrentPage(1);
     setIsFetching(false);
@@ -192,7 +272,9 @@ function LiveSearch<T>({
 
     const startIndex = lowerText.indexOf(lowerSearchTerm);
     if (startIndex === -1) {
-      return <StyledLiveSearch.ListItemTitle>{text}</StyledLiveSearch.ListItemTitle>;
+      return (
+        <StyledLiveSearch.ListItemTitle>{text}</StyledLiveSearch.ListItemTitle>
+      );
     }
 
     const beforeMatch = text.slice(0, startIndex);
@@ -211,15 +293,15 @@ function LiveSearch<T>({
   function renderWithoutResults() {
     return (
       <StyledLiveSearch.ListItemEmpty>
-          <div>Nenhum resultado encontrado</div>
-          {searchSuggestionWhenEmpty ? (
-            <a
-              href={`https://www.google.com/search?q=${searchTerm}`}
-              target="_blank"
-            >
-              Buscar <strong>{searchTerm}</strong> no Google
-            </a>
-          ) : null}
+        <div>Nenhum resultado encontrado</div>
+        {searchSuggestionWhenEmpty ? (
+          <a
+            href={`https://www.google.com/search?q=${searchTerm}`}
+            target="_blank"
+          >
+            Buscar <strong>{searchTerm}</strong> no Google
+          </a>
+        ) : null}
       </StyledLiveSearch.ListItemEmpty>
     );
   }
@@ -230,7 +312,11 @@ function LiveSearch<T>({
         registerMatch != null &&
         registerMatch === Number(item[identifierField]);
       return (
-        <StyledLiveSearch.ListItem key={index} matchAll={matchAll}>
+        <StyledLiveSearch.ListItem
+          key={index}
+          matchAll={matchAll}
+          navigationIsHere={positionArrowNavigation === index}
+        >
           {matchAll
             ? renderMatchAll(
                 item,
