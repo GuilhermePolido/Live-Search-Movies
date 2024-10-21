@@ -30,11 +30,10 @@ yarn
 yarn dev
 ```
 
+Open in browser http://localhost:5173
+
 ## Environments
 You will need to configure the variable VITE_API_READ_ACCESS_TOKEN in the .env file. You can get the token in https://developer.themoviedb.org/docs/getting-started.
-
-
-Open in browser http://localhost:5173
 
 ## Build
 
