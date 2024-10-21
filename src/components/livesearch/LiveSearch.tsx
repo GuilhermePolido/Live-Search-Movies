@@ -61,68 +61,6 @@ function LiveSearch<T>({
     const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (isDropdownVisible) {
-                if (e.key === ' ' && results[positionArrowNavigation]) {
-                    handleToggleFavorite(results[positionArrowNavigation]);
-                    e.preventDefault();
-                }
-                if (e.key === 'ArrowLeft') {
-                    if (prevSearchTerm != null && prevSearchTerm.length > 0) {
-                        setTextWidth(measureTextWidth(String(prevSearchTerm)));
-                        setSearchTerm(prevSearchTerm);
-                        setPositionArrowNavigation(-1);
-                        setResults([]);
-                        setPrevSearchTerm('');
-                        e.preventDefault();
-                    }
-                } else if (e.key === 'ArrowRight') {
-                    if (
-                        suggestion != null &&
-                        searchTerm != null &&
-                        suggestion.length > 0 &&
-                        searchTerm.length > 0 &&
-                        suggestion.toLowerCase() !== searchTerm.toLowerCase()
-                    ) {
-                        setPrevSearchTerm(searchTerm);
-                        setTextWidth(measureTextWidth(String(suggestion)));
-                        setSearchTerm(suggestion);
-                        setPositionArrowNavigation(-1);
-                        setResults([]);
-                        e.preventDefault();
-                    }
-                } else if (e.key === 'ArrowDown') {
-                    setPositionArrowNavigation((prev) =>
-                        Math.min(prev + 1, results.length - 1)
-                    );
-                    e.preventDefault();
-                } else if (e.key === 'ArrowUp') {
-                    setPositionArrowNavigation((prev) =>
-                        Math.max(prev - 1, -1)
-                    );
-                    e.preventDefault();
-                } else if (
-                    e.key === 'Enter' &&
-                    results[positionArrowNavigation]
-                ) {
-                    const selectedItem = results[positionArrowNavigation];
-
-                    if (
-                        String(selectedItem[titleField]).toLowerCase() !==
-                        searchTerm.toLowerCase()
-                    ) {
-                        setTextWidth(
-                            measureTextWidth(String(selectedItem[titleField]))
-                        );
-                        setSearchTerm(String(selectedItem[titleField]));
-                        setPositionArrowNavigation(-1);
-                        setResults([]);
-                        e.preventDefault();
-                    }
-                }
-            }
-        };
-
         if (isDropdownVisible) {
             window.addEventListener('keydown', handleKeyDown);
         } else {
@@ -153,7 +91,97 @@ function LiveSearch<T>({
         }
     }, [positionArrowNavigation]);
 
-    const measureTextWidth = (text: string) => {
+    useEffect(() => {
+        setPositionArrowNavigation(-1);
+        if (searchTerm != null && searchTerm.length > 0) {
+            setIsFetching(true);
+            const delayDebounceFn = setTimeout(() => {
+                getData();
+            }, 300);
+
+            setIsDropdownVisible(true);
+
+            return () => {
+                clearTimeout(delayDebounceFn);
+            };
+        } else {
+            setResults([]);
+            setSuggestion('');
+            setIsDropdownVisible(false);
+            setCurrentPage(1);
+        }
+    }, [searchTerm]);
+
+    useEffect(() => {
+        if (currentPage > 1) {
+            setIsFetching(true);
+            getData();
+        }
+    }, [currentPage]);
+
+    function handleKeyDown(e: KeyboardEvent) {
+        if (isDropdownVisible) {
+            if (e.key === ' ' && results[positionArrowNavigation]) {
+                handleToggleFavorite(results[positionArrowNavigation]);
+                e.preventDefault();
+            }
+            if (e.key === 'ArrowLeft') {
+                if (prevSearchTerm != null && prevSearchTerm.length > 0) {
+                    setTextWidth(measureTextWidth(String(prevSearchTerm)));
+                    setSearchTerm(prevSearchTerm);
+                    setPositionArrowNavigation(-1);
+                    setResults([]);
+                    setPrevSearchTerm('');
+                    e.preventDefault();
+                }
+            } else if (e.key === 'ArrowRight') {
+                if (
+                    suggestion != null &&
+                    searchTerm != null &&
+                    suggestion.length > 0 &&
+                    searchTerm.length > 0 &&
+                    suggestion.toLowerCase() !== searchTerm.toLowerCase()
+                ) {
+                    setPrevSearchTerm(searchTerm);
+                    setTextWidth(measureTextWidth(String(suggestion)));
+                    setSearchTerm(suggestion);
+                    setPositionArrowNavigation(-1);
+                    setResults([]);
+                    e.preventDefault();
+                }
+            } else if (e.key === 'ArrowDown') {
+                setPositionArrowNavigation((prev) =>
+                    Math.min(prev + 1, results.length - 1)
+                );
+                e.preventDefault();
+            } else if (e.key === 'ArrowUp') {
+                setPositionArrowNavigation((prev) =>
+                    Math.max(prev - 1, -1)
+                );
+                e.preventDefault();
+            } else if (
+                e.key === 'Enter' &&
+                results[positionArrowNavigation]
+            ) {
+                const selectedItem = results[positionArrowNavigation];
+
+                if (
+                    String(selectedItem[titleField]).toLowerCase() !==
+                    searchTerm.toLowerCase()
+                ) {
+                    setTextWidth(
+                        measureTextWidth(String(selectedItem[titleField]))
+                    );
+                    setSearchTerm(String(selectedItem[titleField]));
+                    setPositionArrowNavigation(-1);
+                    setResults([]);
+                    e.preventDefault();
+                }
+            }
+        }
+    };
+
+    function measureTextWidth (text: string) {
         if (inputRef.current) {
             const computedStyle = window.getComputedStyle(inputRef.current);
             const paddingLeft = parseFloat(computedStyle.paddingLeft);
@@ -237,34 +265,6 @@ function LiveSearch<T>({
             }
         });
     }
-
-    useEffect(() => {
-        setPositionArrowNavigation(-1);
-        if (searchTerm != null && searchTerm.length > 0) {
-            setIsFetching(true);
-            const delayDebounceFn = setTimeout(() => {
-                getData();
-            }, 300);
-
-            setIsDropdownVisible(true);
-
-            return () => {
-                clearTimeout(delayDebounceFn);
-            };
-        } else {
-            setResults([]);
-            setSuggestion('');
-            setIsDropdownVisible(false);
-            setCurrentPage(1);
-        }
-    }, [searchTerm]);
-
-    useEffect(() => {
-        if (currentPage > 1) {
-            setIsFetching(true);
-            getData();
-        }
-    }, [currentPage]);
 
     function handleClickInput() {
         setPositionArrowNavigation(-1);

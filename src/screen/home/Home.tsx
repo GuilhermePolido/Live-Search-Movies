@@ -99,7 +99,7 @@ export default function Home() {
         setCurrentPage(1);
     }
 
-    const handleRowClick = (movieId: number) => {
+    function handleRowClick(movieId: number) {
         const externalUrl = `${baseUrlMovie}/${movieId}`;
         window.open(externalUrl, '_blank');
     };
