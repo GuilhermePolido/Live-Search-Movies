@@ -44,7 +44,7 @@ export const StyledHome = {
         }
     `,
 
-    Tbody: styled.tbody`
+    Tbody: styled.tbody<{ref: React.RefObject<HTMLUListElement>}>`
         display: block;
         max-height: calc(100vh - 270px);
         overflow-y: auto;

@@ -4,8 +4,8 @@ import {
     Route,
     RouterProvider,
 } from 'react-router-dom';
-import Home from '../screen/home/Home';
-import Movies from '../screen/movies/Movies';
+import Home from './screen/home/Home';
+import Movies from './screen/movies/Movies';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
