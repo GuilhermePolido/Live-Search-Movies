@@ -9,6 +9,7 @@ Essa é uma aplicação de busca de filmes utilizando TMDB API.
 -
 
 ## Live demo
+https://live-search-movies.vercel.app/
 
 ## Technologies Used
 
