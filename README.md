@@ -17,6 +17,7 @@ https://live-search-movies.vercel.app/
 -   React js
 -   Node js
 -   React Router Dom
+-   Cypress
 
 ## Installation
 
@@ -67,4 +68,4 @@ Choose E2E Testing
 
 Choose a browser
 
-Click in \_\_\_\_.cy.ts to run the spec
+Click in searchMovies.cy.js to run the spec

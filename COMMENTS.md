@@ -6,6 +6,7 @@ Tecnologias:
 -   TypesScript
 -   JavaScript
 -   Styled Components
+-   Cypress
 
 Usar React.js, TypeScript, JavaScript e Styled Components juntos permite criar interfaces reativas e escaláveis (React), com código seguro e tipado (TypeScript), usando a flexibilidade do JavaScript, e estilos encapsulados e dinâmicos (Styled Components).
 
@@ -20,3 +21,5 @@ Ao desenvolver a tela inicial da minha aplicação, optei por reaproveitar compo
 Decidi aplicar a personalização da barra de rolagem de forma global para garantir uma aparência e experiência consistentes em toda a aplicação. Essa abordagem simplifica a manutenção, pois permite alterar o estilo em um único lugar, evitando inconsistências em diferentes componentes. Com isso, busco oferecer uma navegação mais fluida e alinhada com o design da aplicação, proporcionando uma interface mais intuitiva e visualmente atraente para os usuários.
 
 Uma melhoria futura interessante seria permitir a customização do LiveSearch, oferecendo a opção de desativar e personalizar algumas funcionalidades, para que se ajustem melhor ao contexto onde ele será utilizado. Além disso, a implementação de um sistema de tradução seria valiosa, uma vez que a API do TMDB oferece suporte para múltiplos idiomas. Outra melhoria seria otimizar a busca pelos filmes favoritos na tela inicial, incluindo a adição de atalhos de teclado, semelhante aos disponíveis no componente Live Search. Por fim, seria útil criar uma página detalhada para cada filme, exibindo mais informações ao clicar em um item da lista.
+
+Implementei testes básicos usando Cypress, mas com mais tempo poderia ampliar a cobertura de testes, verificando todas as funcionalidades e casos de uso detalhadamente.

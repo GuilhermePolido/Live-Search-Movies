@@ -155,14 +155,9 @@ function LiveSearch<T>({
                 );
                 e.preventDefault();
             } else if (e.key === 'ArrowUp') {
-                setPositionArrowNavigation((prev) =>
-                    Math.max(prev - 1, -1)
-                );
+                setPositionArrowNavigation((prev) => Math.max(prev - 1, -1));
                 e.preventDefault();
-            } else if (
-                e.key === 'Enter' &&
-                results[positionArrowNavigation]
-            ) {
+            } else if (e.key === 'Enter' && results[positionArrowNavigation]) {
                 const selectedItem = results[positionArrowNavigation];
 
                 if (
@@ -179,9 +174,9 @@ function LiveSearch<T>({
                 }
             }
         }
-    };
+    }
 
-    function measureTextWidth (text: string) {
+    function measureTextWidth(text: string) {
         if (inputRef.current) {
             const computedStyle = window.getComputedStyle(inputRef.current);
             const paddingLeft = parseFloat(computedStyle.paddingLeft);
@@ -197,7 +192,7 @@ function LiveSearch<T>({
         }
 
         return 0;
-    };
+    }
 
     function handleToggleFavorite(item: T) {
         const index = favorites.findIndex(
@@ -368,6 +363,7 @@ function LiveSearch<T>({
                               </Highlight>
                           )}
                     <StyledLiveSearch.ListItemFavorite
+                        className={`favorite ${isFavorite ? 'favorite-on' : 'favorite-off'}`}
                         onClick={() => handleToggleFavorite(item)}
                     >
                         <IoStar
@@ -402,6 +398,7 @@ function LiveSearch<T>({
         return (
             <StyledLiveSearch.Dropdown
                 ref={dropdownRef}
+                className="list"
                 onScroll={handleScroll}
             >
                 {renderDropdownContent()}
@@ -410,11 +407,12 @@ function LiveSearch<T>({
     }
 
     return (
-        <StyledLiveSearch.Content>
+        <StyledLiveSearch.Content className="live-search">
             <Label>{label}</Label>
             <StyledLiveSearch.InputContent>
                 <StyledLiveSearch.Input
                     ref={inputRef}
+                    className="input-live-search"
                     value={searchTerm}
                     onChange={handleInputChange}
                     placeholder={placeholder}

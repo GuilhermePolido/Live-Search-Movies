@@ -112,7 +112,7 @@ export default function Home() {
                     value={search}
                     onChange={handleInputChange}
                 />
-                <Label>{`Mostrando ${results.length} de ${totalFinded} itens`}</Label>
+                <Label id='qtd-label'>{`Mostrando ${results.length} de ${totalFinded} itens`}</Label>
                 <StyledHome.Overflow>
                     <StyledHome.Table>
                         <StyledHome.Thead>
