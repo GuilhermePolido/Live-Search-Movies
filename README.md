@@ -2,11 +2,13 @@
 
 ## Description
 
-Essa é uma aplicação de busca de filmes utilizando TMDB API.
+This is a movie search application using TMDB API.
 
 ## Functionalities
 
--
+- Movie search, using live search component
+- You can use the arrow keys to use the shortcuts in the live search component
+- List of all favorites
 
 ## Live demo
 https://live-search-movies.vercel.app/
