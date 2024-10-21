@@ -7,6 +7,7 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 import { IoStar } from "react-icons/io5";
+import Highlight from "../highlight/Highlight";
 
 type LiveSearchProps<T> = {
   label: string;
@@ -274,7 +275,7 @@ function LiveSearch<T>({
     setSearchTerm(value);
 
     setTextWidth(measureTextWidth(value));
-  };
+  }
 
   function renderArrow() {
     let Arrow = MdOutlineKeyboardArrowDown;
@@ -309,30 +310,6 @@ function LiveSearch<T>({
     }
 
     return null;
-  }
-
-  function highlightMatch(text: string, searchTerm: string) {
-    const lowerText = text.toLowerCase();
-    const lowerSearchTerm = searchTerm.toLowerCase();
-
-    const startIndex = lowerText.indexOf(lowerSearchTerm);
-    if (startIndex === -1) {
-      return (
-        <StyledLiveSearch.ListItemTitle>{text}</StyledLiveSearch.ListItemTitle>
-      );
-    }
-
-    const beforeMatch = text.slice(0, startIndex);
-    const match = text.slice(startIndex, startIndex + searchTerm.length);
-    const afterMatch = text.slice(startIndex + searchTerm.length);
-
-    return (
-      <StyledLiveSearch.ListItemTitle>
-        {beforeMatch}
-        <StyledLiveSearch.Highlight>{match}</StyledLiveSearch.Highlight>
-        {afterMatch}
-      </StyledLiveSearch.ListItemTitle>
-    );
   }
 
   function renderWithoutResults() {
@@ -371,11 +348,15 @@ function LiveSearch<T>({
           {matchAll
             ? renderMatchAll(
                 item,
-                highlightMatch(String(item[titleField]), searchTerm)
+                <Highlight term={searchTerm}>
+                  {String(item[titleField])}
+                </Highlight>
               )
             : renderItem(
                 item,
-                highlightMatch(String(item[titleField]), searchTerm)
+                <Highlight term={searchTerm}>
+                  {String(item[titleField])}
+                </Highlight>
               )}
           <StyledLiveSearch.ListItemFavorite
             onClick={() => handleToggleFavorite(item)}

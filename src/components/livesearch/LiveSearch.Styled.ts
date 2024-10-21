@@ -108,11 +108,6 @@ const ListItemTitle = styled.span`
   white-space: pre;
 `;
 
-const Highlight = styled.span`
-  color: #0092ff;
-  white-space: pre;
-`;
-
 const ListItemEmpty = styled.li`
   display: flex;
   flex-direction: column;
