@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
-import { StyledTag } from "./Tag.Styled";
+import { ReactNode } from 'react';
+import { StyledTag } from './Tag.Styled';
 
 type TagProps = {
-  children: ReactNode;
+    children: ReactNode;
 };
 
 export default function Tag({ children }: TagProps) {
-  return <StyledTag>{children}</StyledTag>;
+    return <StyledTag>{children}</StyledTag>;
 }

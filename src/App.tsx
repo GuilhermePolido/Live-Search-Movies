@@ -1,8 +1,8 @@
-import "./App.css";
-import AppRoutes from "./utils/App.routes";
+import './App.css';
+import AppRoutes from './utils/App.routes';
 
 function App() {
-  return <AppRoutes />;
+    return <AppRoutes />;
 }
 
 export default App;

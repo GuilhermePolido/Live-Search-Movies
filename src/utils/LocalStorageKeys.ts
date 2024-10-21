@@ -1,3 +1,3 @@
 export const LocalStorageKeys = {
-  movieFavorites: "movieFavorites",
+    movieFavorites: 'movieFavorites',
 };

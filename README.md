@@ -6,17 +6,16 @@ Essa é uma aplicação de busca de filmes utilizando TMDB API.
 
 ## Functionalities
 
-- 
+-
 
 ## Live demo
 
-
 ## Technologies Used
 
-- TypeScript
-- React js
-- Node js
-- React Router Dom
+-   TypeScript
+-   React js
+-   Node js
+-   React Router Dom
 
 ## Installation
 
@@ -67,4 +66,4 @@ Choose E2E Testing
 
 Choose a browser
 
-Click in ____.cy.ts to run the spec
+Click in \_\_\_\_.cy.ts to run the spec

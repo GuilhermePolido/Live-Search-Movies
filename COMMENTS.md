@@ -2,10 +2,10 @@ Live Search Movies
 
 Tecnologias:
 
-* React Js
-* TypesScript
-* JavaScript
-* Styled Components
+-   React Js
+-   TypesScript
+-   JavaScript
+-   Styled Components
 
 Usar React.js, TypeScript, JavaScript e Styled Components juntos permite criar interfaces reativas e escaláveis (React), com código seguro e tipado (TypeScript), usando a flexibilidade do JavaScript, e estilos encapsulados e dinâmicos (Styled Components).
 
