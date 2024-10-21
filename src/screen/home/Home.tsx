@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import DefaultLayout from '../../components/defaultlayout/DefaultLayout';
 import { StyledHome } from './Home.Styled';
 import Input from '../../components/input/Input';
-import { Genre, Movie } from '../../models/MovieModel';
+import { Movie } from '../../models/MovieModel';
 import MovieResource from '../../resources/MovieResource';
 import { LocalStorageKeys } from '../../utils/LocalStorageKeys';
 import Highlight from '../../components/highlight/Highlight';
@@ -14,7 +14,7 @@ const pageSize = 10;
 
 export default function Home() {
     const [search, setSearch] = useState('');
-    const [genres, setGenres] = useState<Genre[]>([]);
+    const [genres, setGenres] = useState<{ [key: string]: string }>({});
     const [favorites, setFavorites] = useState<Movie[]>([]);
     const [results, setResults] = useState<Movie[]>([]);
     const [isFetching, setIsFetching] = useState(false);
@@ -72,7 +72,15 @@ export default function Home() {
 
     function getGenres() {
         MovieResource.listGenres().then((response) => {
-            setGenres(response.data.genres);
+            setGenres(
+                response.data.genres.reduce(
+                    (acc: { [key: string]: string }, item) => {
+                        acc[String(item.id)] = item.name;
+                        return acc;
+                    },
+                    {}
+                )
+            );
         });
     }
 
@@ -102,7 +110,7 @@ export default function Home() {
     function handleRowClick(movieId: number) {
         const externalUrl = `${baseUrlMovie}/${movieId}`;
         window.open(externalUrl, '_blank');
-    };
+    }
 
     return (
         <DefaultLayout>
@@ -112,7 +120,7 @@ export default function Home() {
                     value={search}
                     onChange={handleInputChange}
                 />
-                <Label id='qtd-label'>{`Mostrando ${results.length} de ${totalFinded} itens`}</Label>
+                <Label id="qtd-label">{`Mostrando ${results.length} de ${totalFinded} itens`}</Label>
                 <StyledHome.Overflow>
                     <StyledHome.Table>
                         <StyledHome.Thead>
@@ -147,12 +155,7 @@ export default function Home() {
                                     </td>
                                     <td>
                                         {movie.genre_ids
-                                            .map(
-                                                (gid) =>
-                                                    genres.find(
-                                                        (gen) => gid === gen.id
-                                                    )?.name
-                                            )
+                                            .map((gid) => genres[String(gid)])
                                             .join(', ')}
                                     </td>
                                 </StyledHome.TbodyTr>

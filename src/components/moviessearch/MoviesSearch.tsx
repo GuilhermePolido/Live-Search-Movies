@@ -1,6 +1,6 @@
 import { StyledMoviesSearch } from './MoviesSearch.Styled';
 import { ReactNode, useEffect, useState } from 'react';
-import { Movie, Genre } from '../../models/MovieModel';
+import { Movie } from '../../models/MovieModel';
 import Tag from '../tag/Tag';
 import LiveSearch from '../livesearch/LiveSearch';
 import { StyledLiveSearch } from '../livesearch/LiveSearch.Styled';
@@ -11,7 +11,7 @@ const baseUrlImage = import.meta.env.VITE_BASE_URL_IMG;
 const baseUrlMovie = import.meta.env.VITE_BASE_URL_MOVIE;
 
 export default function MoviesSearch() {
-    const [genres, setGenres] = useState<Genre[]>([]);
+    const [genres, setGenres] = useState<{ [key: string]: string }>({});
     const [favorites, setFavorites] = useState<Movie[]>([]);
 
     useEffect(() => {
@@ -38,7 +38,15 @@ export default function MoviesSearch() {
 
     function getGenres() {
         MovieResource.listGenres().then((response) => {
-            setGenres(response.data.genres);
+            setGenres(
+                response.data.genres.reduce(
+                    (acc: { [key: string]: string }, item) => {
+                        acc[String(item.id)] = item.name;
+                        return acc;
+                    },
+                    {}
+                )
+            );
         });
     }
 
@@ -80,9 +88,7 @@ export default function MoviesSearch() {
                     </StyledMoviesSearch.MatchAll.InformationLine>
                     <StyledMoviesSearch.MatchAll.InformationLine gap={8}>
                         {item.genre_ids.map((gid) => (
-                            <Tag>
-                                {genres.find((gen) => gid === gen.id)?.name}
-                            </Tag>
+                            <Tag>{genres[String(gid)]}</Tag>
                         ))}
                     </StyledMoviesSearch.MatchAll.InformationLine>
                 </StyledMoviesSearch.MatchAll.Informations>

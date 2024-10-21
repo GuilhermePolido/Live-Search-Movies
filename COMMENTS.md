@@ -20,6 +20,8 @@ Ao desenvolver a tela inicial da minha aplicação, optei por reaproveitar compo
 
 Decidi aplicar a personalização da barra de rolagem de forma global para garantir uma aparência e experiência consistentes em toda a aplicação. Essa abordagem simplifica a manutenção, pois permite alterar o estilo em um único lugar, evitando inconsistências em diferentes componentes. Com isso, busco oferecer uma navegação mais fluida e alinhada com o design da aplicação, proporcionando uma interface mais intuitiva e visualmente atraente para os usuários.
 
+Fiz uma alteração para otimizar o desempenho da listagem de gêneros, convertendo a lista em um objeto onde o ID do gênero é a chave e o nome é o valor. Isso permite acessar o nome diretamente, sem a necessidade de usar find em cada renderização. Dessa forma, melhoramos o desempenho, especialmente em listas grandes, tornando o acesso mais rápido e eficiente.
+
 Uma melhoria futura interessante seria permitir a customização do LiveSearch, oferecendo a opção de desativar e personalizar algumas funcionalidades, para que se ajustem melhor ao contexto onde ele será utilizado. Além disso, a implementação de um sistema de tradução seria valiosa, uma vez que a API do TMDB oferece suporte para múltiplos idiomas. Outra melhoria seria otimizar a busca pelos filmes favoritos na tela inicial, incluindo a adição de atalhos de teclado, semelhante aos disponíveis no componente Live Search. Por fim, seria útil criar uma página detalhada para cada filme, exibindo mais informações ao clicar em um item da lista.
 
 Implementei testes básicos usando Cypress, mas com mais tempo poderia ampliar a cobertura de testes, verificando todas as funcionalidades e casos de uso detalhadamente.
